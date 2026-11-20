@@ -42,14 +42,134 @@ def get_secret(key: str, default: str | None = None) -> str | None:
 # 1. SETUP: Configuration & API Keys
 # Configure the Streamlit browser page and introduce the application architecture.
 st.set_page_config(
-    page_title="Conversational Audio Bot",
-    page_icon="🎙️",
+    page_title="Card Dispute Voice Agent | MVP",
+    page_icon="🛡️",
     layout="wide",
 )
 
-# Reduce excess top padding so the embedded widget canvas fits comfortably above the fold.
+# Global MVP styling: compact page spacing, branded hero banner, and footer.
 st.markdown(
-    "<style>.block-container { padding-top: 2rem; padding-bottom: 1.5rem; }</style>",
+    """
+    <style>
+      .block-container {
+        padding-top: 1.25rem;
+        padding-bottom: 1.5rem;
+      }
+      .mvp-hero {
+        background: linear-gradient(120deg, #0f172a 0%, #1e3a8a 62%, #1d4ed8 100%);
+        border: 1px solid rgba(147, 197, 253, 0.25);
+        border-radius: 14px;
+        padding: 18px 24px;
+        margin-bottom: 14px;
+        color: #f8fafc;
+        box-shadow: 0 8px 24px rgba(15, 23, 42, 0.14);
+      }
+      .mvp-hero-top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        flex-wrap: wrap;
+      }
+      .mvp-brand-group {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+      }
+      .mvp-logo-box {
+        width: 44px;
+        height: 44px;
+        border-radius: 11px;
+        background: rgba(255, 255, 255, 0.12);
+        border: 1px solid rgba(255, 255, 255, 0.22);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+      }
+      .mvp-title-row {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+      .mvp-title {
+        font-size: 1.55rem;
+        font-weight: 700;
+        letter-spacing: -0.02em;
+        margin: 0;
+        color: #ffffff;
+        line-height: 1.2;
+      }
+      .mvp-badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 3px 10px;
+        border-radius: 999px;
+        font-size: 0.72rem;
+        font-weight: 700;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        background: linear-gradient(90deg, #f59e0b 0%, #fbbf24 100%);
+        color: #0f172a;
+      }
+      .mvp-subtitle {
+        font-size: 0.88rem;
+        color: #cbd5e1;
+        margin: 4px 0 0 0;
+      }
+      .mvp-pills {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin-top: 12px;
+      }
+      .mvp-pill {
+        font-size: 0.74rem;
+        font-weight: 600;
+        color: #e0f2fe;
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(186, 230, 253, 0.28);
+        padding: 3px 10px;
+        border-radius: 999px;
+      }
+      .mvp-pill.live {
+        background: rgba(16, 185, 129, 0.2);
+        border-color: rgba(110, 231, 183, 0.45);
+        color: #d1fae5;
+      }
+      .sidebar-brand {
+        background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%);
+        border-radius: 10px;
+        padding: 12px 14px;
+        color: #f8fafc;
+        margin-bottom: 14px;
+      }
+      .sidebar-brand-title {
+        font-size: 0.95rem;
+        font-weight: 700;
+        margin: 0;
+        color: #ffffff;
+      }
+      .sidebar-brand-sub {
+        font-size: 0.75rem;
+        color: #bfdbfe;
+        margin: 3px 0 0 0;
+      }
+      .mvp-footer {
+        margin-top: 18px;
+        padding-top: 10px;
+        border-top: 1px solid #e2e8f0;
+        font-size: 0.78rem;
+        color: #64748b;
+        display: flex;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+    </style>
+    """,
     unsafe_allow_html=True,
 )
 
@@ -58,16 +178,51 @@ load_dotenv(override=True)
 api_key = get_secret("OPENROUTER_API_KEY")
 default_agent_id = get_secret("ELEVENLABS_AGENT_ID", DEFAULT_ELEVENLABS_AGENT_ID)
 
-st.title("🎙️ Conversational Audio Bot")
-st.caption(
-    "Compare a live **ElevenLabs Realtime Conversational AI** agent with the "
-    "**Chained Pipeline** (Whisper + GPT-6 Luna via OpenRouter + gTTS)."
+st.markdown(
+    """
+    <div class="mvp-hero">
+      <div class="mvp-hero-top">
+        <div class="mvp-brand-group">
+          <div class="mvp-logo-box" aria-hidden="true">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+              <path d="M12 2L4 5.5V11.2C4 16.4 7.4 21.1 12 22.5C16.6 21.1 20 16.4 20 11.2V5.5L12 2Z"
+                    stroke="#93C5FD" stroke-width="1.8" fill="rgba(59,130,246,0.22)"/>
+              <path d="M9 11.5V12.5M12 9V15M15 10.5V13.5"
+                    stroke="#FFFFFF" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div>
+            <div class="mvp-title-row">
+              <h1 class="mvp-title">Card Dispute Voice Agent</h1>
+              <span class="mvp-badge">MVP v1.0</span>
+            </div>
+            <p class="mvp-subtitle">
+              US Banking Reg E &amp; Reg Z Autonomous Card Dispute Resolution &middot; Powered by ElevenLabs Conversational AI
+            </p>
+          </div>
+        </div>
+      </div>
+      <div class="mvp-pills">
+        <span class="mvp-pill live">&#9679; Live Voice Demo</span>
+      </div>
+    </div>
+    """,
+    unsafe_allow_html=True,
 )
 
 
 # 2. SIDEBAR: SYSTEM CONFIGURATION
 # Allow users to inspect/configure the ElevenLabs widget and tune the chained pipeline.
 with st.sidebar:
+    st.markdown(
+        """
+        <div class="sidebar-brand">
+          <p class="sidebar-brand-title">🛡️ Card Dispute Voice Agent</p>
+          <p class="sidebar-brand-sub">MVP v1.0 &middot; US Financial Services Demo</p>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
     st.header("⚙️ System Configuration")
 
     st.subheader("ElevenLabs Voice Widget")
@@ -84,11 +239,11 @@ with st.sidebar:
     )
     widget_height = st.slider(
         "Widget Canvas Height (px)",
-        min_value=260,
-        max_value=640,
-        value=380,
+        min_value=420,
+        max_value=760,
+        value=560,
         step=20,
-        help="Adjust if the expanded widget needs more vertical space.",
+        help="Adjust if the expanded widget or guide needs more vertical space.",
     )
 
     st.divider()
@@ -108,6 +263,12 @@ Controls how much internal reasoning the model does before it answers.
 Higher effort adds latency to this voice pipeline, and does **not**
 guarantee that an answer is grounded or factually correct.
 """,
+    )
+
+    st.divider()
+    st.caption(
+        "🧪 **Demo Notice:** All cardholder names, emails, and dates of birth "
+        "displayed in this MVP are synthetic test data."
     )
 
 
@@ -144,18 +305,20 @@ with tab_elevenlabs:
             height: 100%;
             background: transparent;
             font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            color: #0f172a;
           }}
           .widget-stage {{
             position: relative;
             width: 100%;
             height: 100%;
-            border: 1px solid #d0d7de;
-            border-radius: 12px;
-            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            border: 1px solid #cbd5e1;
+            border-radius: 14px;
+            background: linear-gradient(135deg, #f8fafc 0%, #eff6ff 100%);
             padding: 16px 20px;
             display: flex;
             flex-direction: column;
-            justify-content: space-between;
+            gap: 12px;
+            overflow: hidden;
           }}
           .stage-header {{
             display: flex;
@@ -164,18 +327,35 @@ with tab_elevenlabs:
             gap: 12px;
             flex-wrap: wrap;
           }}
+          .stage-title-wrap {{
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+          }}
           .stage-title {{
             font-size: 15px;
-            font-weight: 600;
+            font-weight: 700;
             color: #0f172a;
             margin: 0;
+          }}
+          .synth-tag {{
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            padding: 2px 8px;
+            border-radius: 999px;
+            background: #fef3c7;
+            color: #92400e;
+            border: 1px solid #fcd34d;
           }}
           .status-pill {{
             display: inline-flex;
             align-items: center;
             gap: 6px;
             font-size: 12px;
-            font-weight: 500;
+            font-weight: 600;
             padding: 4px 10px;
             border-radius: 999px;
             background: #e2e8f0;
@@ -189,15 +369,7 @@ with tab_elevenlabs:
             background: #fee2e2;
             color: #991b1b;
           }}
-          .stage-hint {{
-            font-size: 13px;
-            color: #475569;
-            margin: 8px 0 0 0;
-            max-width: 680px;
-            line-height: 1.45;
-          }}
           .diag-box {{
-            margin-top: 12px;
             padding: 10px 12px;
             border-radius: 8px;
             background: #fff1f2;
@@ -212,20 +384,313 @@ with tab_elevenlabs:
             padding: 1px 4px;
             border-radius: 4px;
           }}
+          .stage-body {{
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) 300px;
+            gap: 16px;
+            flex: 1;
+            min-height: 0;
+          }}
+          .guide-col {{
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            overflow-y: auto;
+            padding-right: 4px;
+          }}
+          .info-card {{
+            background: #ffffff;
+            border: 1px solid #dbeafe;
+            border-radius: 12px;
+            padding: 12px 14px;
+            box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
+          }}
+          .card-head {{
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            margin-bottom: 6px;
+            flex-wrap: wrap;
+          }}
+          .card-title {{
+            font-size: 13.5px;
+            font-weight: 700;
+            color: #1e3a8a;
+            margin: 0;
+          }}
+          .card-sub {{
+            font-size: 11.5px;
+            color: #64748b;
+            margin: 0 0 8px 0;
+            line-height: 1.4;
+          }}
+          table.test-users {{
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px;
+          }}
+          table.test-users th {{
+            text-align: left;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+            color: #475569;
+            background: #f1f5f9;
+            padding: 6px 8px;
+            border-bottom: 1px solid #cbd5e1;
+          }}
+          table.test-users td {{
+            padding: 7px 8px;
+            border-bottom: 1px solid #e2e8f0;
+            vertical-align: top;
+            color: #0f172a;
+          }}
+          table.test-users tr:last-child td {{
+            border-bottom: none;
+          }}
+          .acct-chip {{
+            display: inline-block;
+            font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+            font-size: 11px;
+            font-weight: 700;
+            background: #eff6ff;
+            color: #1d4ed8;
+            border: 1px solid #bfdbfe;
+            border-radius: 6px;
+            padding: 1px 6px;
+          }}
+          .dob-chip {{
+            display: inline-block;
+            font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+            font-size: 11.5px;
+            background: #f8fafc;
+            border: 1px solid #cbd5e1;
+            border-radius: 5px;
+            padding: 1px 6px;
+            color: #0f172a;
+            white-space: nowrap;
+          }}
+          .user-note {{
+            margin: 8px 0 0 0;
+            font-size: 11.5px;
+            color: #475569;
+            background: #f8fafc;
+            border-left: 3px solid #2563eb;
+            padding: 6px 8px;
+            border-radius: 4px;
+          }}
+          .steps-row {{
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 10px;
+          }}
+          .step-pill {{
+            font-size: 11.5px;
+            font-weight: 600;
+            color: #1e293b;
+            background: #f1f5f9;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 4px 8px;
+          }}
+          .prompt-grid {{
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 8px;
+          }}
+          .prompt-item {{
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 9px;
+            padding: 8px 10px;
+          }}
+          .prompt-label {{
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+            color: #1d4ed8;
+            margin: 0 0 4px 0;
+          }}
+          .prompt-quote {{
+            font-size: 12px;
+            color: #1e293b;
+            margin: 0;
+            line-height: 1.4;
+          }}
+          .widget-dock {{
+            border: 1.5px dashed #93c5fd;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.62);
+            padding: 14px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            color: #334155;
+          }}
+          .dock-title {{
+            font-size: 13.5px;
+            font-weight: 700;
+            color: #0f172a;
+            margin: 0 0 6px 0;
+          }}
+          .dock-text {{
+            font-size: 12px;
+            color: #475569;
+            line-height: 1.45;
+            margin: 0;
+          }}
+          .dock-tips {{
+            margin: 10px 0 0 0;
+            padding-left: 16px;
+            font-size: 11.5px;
+            color: #475569;
+            line-height: 1.5;
+          }}
+          .dock-pointer {{
+            font-size: 11.5px;
+            font-weight: 600;
+            color: #1d4ed8;
+            padding-bottom: 64px;
+          }}
+          @media (max-width: 860px) {{
+            .stage-body {{
+              grid-template-columns: 1fr;
+            }}
+            .prompt-grid {{
+              grid-template-columns: 1fr;
+            }}
+            .widget-dock {{
+              display: none;
+            }}
+            .guide-col {{
+              padding-bottom: 84px;
+            }}
+          }}
         </style>
       </head>
       <body>
         <div class="widget-stage">
-          <div>
-            <div class="stage-header">
-              <p class="stage-title">ElevenLabs Realtime Voice Widget</p>
-              <span id="widget-status" class="status-pill">Loading widget script...</span>
+          <div class="stage-header">
+            <div class="stage-title-wrap">
+              <p class="stage-title">Live Voice Agent Demo Workspace</p>
+              <span class="synth-tag">Synthetic Test Users Only</span>
             </div>
-            <p class="stage-hint">
-              The floating ElevenLabs launcher appears in the <strong>bottom-right corner of this box</strong>.
-              Click it and allow <strong>microphone access</strong> to start talking.
-            </p>
-            <div id="widget-diag" class="diag-box"></div>
+            <span id="widget-status" class="status-pill">Loading widget script...</span>
+          </div>
+
+          <div id="widget-diag" class="diag-box"></div>
+
+          <div class="stage-body">
+            <div class="guide-col">
+              <!-- Card 1: Explicit Synthetic Test Users -->
+              <div class="info-card">
+                <div class="card-head">
+                  <p class="card-title">🧪 Test Caller Profiles (Explicitly Synthetic Demo Users)</p>
+                </div>
+                <p class="card-sub">
+                  Pick any <strong>synthetic test user</strong> below when speaking with the voice agent.
+                  Do not enter real personal or card information.
+                </p>
+                <table class="test-users">
+                  <thead>
+                    <tr>
+                      <th>Acct ID</th>
+                      <th>Test User Name</th>
+                      <th>Synthetic DOB</th>
+                      <th>Test Email</th>
+                      <th>Demo Context</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td><span class="acct-chip">#42</span></td>
+                      <td><strong>Sarah Miller</strong><br/><span style="font-size:11px;color:#64748b;">Test User #1</span></td>
+                      <td><span class="dob-chip">04/15/1988</span></td>
+                      <td><code>user42@example.com</code></td>
+                      <td>Open CityMart fraud claim ($46.84) &middot; Flagged acct</td>
+                    </tr>
+                    <tr>
+                      <td><span class="acct-chip">#160</span></td>
+                      <td><strong>Sarah Miller</strong><br/><span style="font-size:11px;color:#64748b;">Test User #2</span></td>
+                      <td><span class="dob-chip">09/22/1991</span></td>
+                      <td><code>user160@mail.test</code></td>
+                      <td>Open StreamCloud claim ($206.11) &middot; Split PillPath</td>
+                    </tr>
+                    <tr>
+                      <td><span class="acct-chip">#191</span></td>
+                      <td><strong>David Brooks</strong><br/><span style="font-size:11px;color:#64748b;">Test User #3</span></td>
+                      <td><span class="dob-chip">11/03/1984</span></td>
+                      <td><code>user191@mail.test</code></td>
+                      <td>Won Quick Stop claim &middot; Flux Online ($99.08)</td>
+                    </tr>
+                  </tbody>
+                </table>
+                <p class="user-note">
+                  <strong>Tip:</strong> Test Users <strong>#42</strong> and <strong>#160</strong> share the name
+                  <strong>Sarah Miller</strong> &mdash; share the email, account ID, or synthetic DOB to help the agent match the right account.
+                </p>
+              </div>
+
+              <!-- Card 2: How to Talk & Starter Questions -->
+              <div class="info-card">
+                <div class="card-head">
+                  <p class="card-title">💬 What You Can Talk About &amp; Starter Questions</p>
+                </div>
+                <div class="steps-row">
+                  <span class="step-pill">1. Click launcher (bottom-right)</span>
+                  <span class="step-pill">2. Allow mic &amp; give Test Name + DOB</span>
+                  <span class="step-pill">3. Ask about a dispute or charge</span>
+                </div>
+                <div class="prompt-grid">
+                  <div class="prompt-item">
+                    <p class="prompt-label">1. Check Open Dispute Status</p>
+                    <p class="prompt-quote">
+                      &ldquo;Hi, I&rsquo;m Sarah Miller, email user160@mail.test, DOB 09/22/1991. Can you check the status of my StreamCloud dispute?&rdquo;
+                    </p>
+                  </div>
+                  <div class="prompt-item">
+                    <p class="prompt-label">2. Verify Duplicate Name / Fraud Claim</p>
+                    <p class="prompt-quote">
+                      &ldquo;Hello, I&rsquo;m Sarah Miller on account 42, DOB 04/15/1988. What&rsquo;s the update on my CityMart fraud dispute?&rdquo;
+                    </p>
+                  </div>
+                  <div class="prompt-item">
+                    <p class="prompt-label">3. File a Merchant Dispute (Reg Z)</p>
+                    <p class="prompt-quote">
+                      &ldquo;Hi, I&rsquo;m David Brooks, DOB 11/03/1984. My Flux Online order for $99.08 never arrived &mdash; can I dispute it without locking my card?&rdquo;
+                    </p>
+                  </div>
+                  <div class="prompt-item">
+                    <p class="prompt-label">4. Test Policy &amp; Reg E Guardrails</p>
+                    <p class="prompt-quote">
+                      &ldquo;What is my Reg E provisional credit timeline, and can you credit $200 to my account right now?&rdquo;
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Reserved Right Column for Floating ElevenLabs Widget -->
+            <div class="widget-dock">
+              <div>
+                <p class="dock-title">🎙️ Voice Agent Launch Zone</p>
+                <p class="dock-text">
+                  Click the <strong>ElevenLabs</strong> button in the bottom-right corner to begin a real-time voice call.
+                </p>
+                <ul class="dock-tips">
+                  <li>Speak naturally &mdash; you can interrupt mid-sentence (barge-in).</li>
+                  <li>Use any synthetic test user on the left to test verification.</li>
+                  <li>Ask about chargebacks, Reg E timelines, or card locks.</li>
+                </ul>
+              </div>
+              <div class="dock-pointer">
+                &#8600; Click the floating widget below to start
+              </div>
+            </div>
           </div>
         </div>
 
@@ -339,7 +804,7 @@ with tab_elevenlabs:
     </html>
     """
 
-    # Render inside an explicit framed height so the bottom-right launcher is immediately visible.
+    # Render inside an explicit framed height so the test-user guide and bottom-right launcher sit side by side.
     components.html(elevenlabs_widget_html, height=widget_height, scrolling=False)
 
 
@@ -443,3 +908,15 @@ with tab_chained:
                         "⚠️ This batch chained architecture is slower than a streaming "
                         "or native realtime speech-to-speech implementation."
                     )
+
+
+# 4. MVP FOOTER
+st.markdown(
+    """
+    <div class="mvp-footer">
+      <span><strong>Card Dispute Voice Agent</strong> &middot; MVP v1.0 Prototype</span>
+      <span>All test user names, emails, and dates of birth are synthetic demo data &middot; Powered by ElevenLabs Conversational AI</span>
+    </div>
+    """,
+    unsafe_allow_html=True,
+)
